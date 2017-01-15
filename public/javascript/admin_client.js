@@ -88,7 +88,9 @@ function updateUser(id, firstname, lastname, email, username) {
         lastname,
         email,
         username,
-        id
+        id,
+        privileges: []
+        
     };
 
     obj.id = id;
@@ -97,6 +99,9 @@ function updateUser(id, firstname, lastname, email, username) {
     obj.email = email;
     obj.username = username;
 
+    getCheckedPrivileges().each(function(){
+        obj.privileges.push($(this).attr('id'));
+    });
 
     console.log(obj); //TODO: Remove Debug Code
 
@@ -136,22 +141,30 @@ function addPrivilege(privilegename) {
     update_table('/admin/getPrivileges');
 }
 
-function addUser(firstname, lastname, email, username) {
+function addUser(firstname, lastname, email, username,password) {
     var obj = {
         firstname,
         lastname,
         email,
         username,
-       
+        password,
+        privileges: []
     };
 
+   
     obj.firstname = firstname;
     obj.lastname = lastname;
     obj.email = email;
     obj.username = username;
+    obj.password = password;
 
+
+    getCheckedPrivileges().each(function(){
+        obj.privileges.push($(this).attr('id'));
+    });
 
     console.log(obj); //TODO: Remove Debug Code
+    //console.log(privileges); //TODO: Remove Debug Code
 
     $.post('/admin/addUser', obj);
 
@@ -232,6 +245,7 @@ function update_table(route) {
 }
 
 
+
 /*======INITIALIZATION======*/
 
 function init_secumod_users() {
@@ -253,8 +267,8 @@ function init_secumod_users() {
                 $('#modal_add').modal();
             }
         }else{
-            $(input[name=password_add]).addClass('has-error');  
-            $(input[name=password_verify_add]).addClass('has-error');  
+            $('input[name=password_add]').addClass('has-error');  
+            $('input[name=password_verify_add]').addClass('has-error');  
         }
     });
 
@@ -324,11 +338,14 @@ function loadPrivilegeList(id){
     $.getJSON('admin/getPrivileges',function(data){
         console.log(data); // TODO: Remove Debug Code
         for(var i=0;i < data.length;i++){
-        
-            $(id).append('<div class="checkbox"> <input type="checkbox">'+ data[i].PrivilegeName +'</input></div>'); 
+            $(id).append('<div class="checkbox"> <input name="privileges" type="checkbox" id="'+data[i].PrivilegeID+'">'+ data[i].PrivilegeName +'</input></div>'); 
         }
         
     });
+}
+
+function getCheckedPrivileges(){
+    return $('input[name=privileges]:checked');
 }
 
 function init_secumod_privileges() {
