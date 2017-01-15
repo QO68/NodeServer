@@ -1,8 +1,14 @@
+<head>
+    
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
         $('document').ready(init_secumod_privileges);
     </script>
+</head>
+
+<body>
+        
 <div class="nav_buffer_top"></div>
 <div class="container">
     <h1>Privileges</h1>
@@ -20,47 +26,71 @@
             <table id="table"></table>
         </div>
         <div class="row">
-            <div class="col-xs-6">
-                <div class="container-fluid">
-                    <div id="form-user-edit">
-                        <form class="form-horizontal">
-                            <fieldset>
-                                <legend>Edit</legend>
-                                <label class="control-label col-xs-2" for="id">PrivilegeID</label>
-                                <div class="col-xs-4">
-                                    <input type="text" class="form-control" id="privilegeid" name="privilegeid_update" readonly>
-                                </div>
-                                <label class="control-label col-xs-2" for="firstname">PrivilegeName</label>
-                                <div class="col-xs-4">
-                                    <input type="text" class="form-control" id="privilegename" name="privilegename_update">
-                                </div>
-                            </fieldset>
-                        </form>
-                        <button type="button" class="btn btn-info" name="update_privileges">Update</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="container-fluid">
-                    <div id="form-user-add">
-                        <form class="form-horizontal">
-                            <fieldset>
-                                <legend>Add</legend>
-                                <label class="control-label col-xs-2" for="id">PrivilegeID</label>
-                                <div class="col-xs-4">
-                                    <input type="text" class="form-control" id="privilegeid" name="privilegeid_add" readonly>
-                                </div>
-                                <label class="control-label col-xs-2" for="firstname">PrivilegeName</label>
-                                <div class="col-xs-4">
-                                    <input type="text" class="form-control" id="privilegename" name="privilegename_add">
-                                </div>
-                            </fieldset>
-                        </form>
-                        <button class="btn btn-default" type="button" name="add_privileges">Add</button>
-                    </div>
-                </div>
-            </div>
+        
+        <div class="container">
+            <h1>Currently Selected</h1>
+            <input type="text" name="selected_id" readonly>
+            <input type="text" name="selected_privilegename" readonly>
         </div>
+    </div>
+
+ 
+
+<hr> <!--ND-->
+
+    <div class="row">
+        <div class="container">
+            <div class="col-xs-6">
+
+            <form>
+                <fieldset>
+
+                    <legend>Edit</legend> 
+
+                    <label class="control-label col-xs-3" for="privilege_name_edit">Privilegename</label>                        
+                    <input type="text" placeholder="Privilegename" name="privilege_name_edit"> <br>
+                    
+                    <br>
+                    <button type="button" class="btn btn-primary btn-block" name="update_privileges">Update</button>
+
+                </fieldset>
+            </form>
+            </div>
+
+                     
+
+
+            <div class="col-xs-6">
+
+            <form>
+                <fieldset>
+
+                    <legend>Add</legend> 
+
+                    <label class="control-label col-xs-3" for="privilege_name_add">Privilegename</label>                        
+                    <input type="text" placeholder="Privilegename" name="privilege_name_add"> <br>
+                    
+                    <br>
+                    <button type="button" class="btn btn-primary btn-block" name="privilege_add">Add</button>
+
+                </fieldset>
+            </form>
+            </div>
+
+                     
+
+
+
+    </div>
+        
+
+
+        
+<hr> <!--ND-->
+
+
+
+
         <div class="modal fade" id="modal_add_privileges">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -119,3 +149,4 @@
             </div>
         </div>
     </div>
+    </body>
