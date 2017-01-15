@@ -31,9 +31,27 @@ function sql(req, res){
 
 
 function getUsers(req, res) {
+
+    var all_rows = [];
+
+   // connection.query("SELECT * FROM Privileges", function (err, rows, fields) {
+   connection.query("SELECT * FROM Users INNER JOIN User_Privileges ON User_Privileges.UserID = Users.UserID INNER JOIN Privileges ON Privileges.PrivilegeID=User_Privileges.PrivilegeID", function (err, rows, fields) {
+        if(!err){
+            all_rows = rows;
+        }
+        else{
+            //TODO : ERROR;
+        }
+    });
+
+    
+
+
+   // connection.query("SELECT * FROM Users INNER JOIN User_Privileges ON User_Privileges.UserID = Users.UserID INNER JOIN Privileges ON Privileges.PrivilegeID=User_Privileges.PrivilegeID", function (err, rows, fields) {
+   
     connection.query("SELECT * FROM Users", function (err, rows, fields) {
         if (!err) {
-            res.json(rows);
+            res.json(rows); //SENDING!
         } else {
             console.log(err);
         }
@@ -44,12 +62,11 @@ function removeUser(req, res) {
     for (var i = 0; i < req.body.ids.length; i++) {
         connection.query("DELETE FROM Users WHERE UserID=?", [req.body.ids[i]], function (err, rows, fields) {
             if (!err) {
-                res.end();
             } else {
                 console.log(err);
-                res.end();
             }
         });
+        unlinkPrivileges(req.body.ids[i]);
     }
     res.end();
 }
@@ -94,16 +111,21 @@ function addUser(req, res) {
 
 function updateUser(req, res) {
     var vals = [];
-    for (var o in req.body) {
-        vals.push(req.body[o]);
-    }
+    var firstname = req.body.firstname,
+        lastname = req.body.lastname,
+        email = req.body.email,
+        username = req.body.username,
+        id = req.body.id;
 
-    if (vals[3]==""||vals[3]==undefined||vals[4]==""||vals[4]==undefined){
-        console.log("username and password can't be empty!");//TODO: add user notify
-    }else{	
-    secu_crypto.password_hash(vals[4],10,function(err,finalString){
-        vals[4]=finalString;
-        connection.query("UPDATE Users SET FirstName=?, LastName=?, EmailAddress=?, Username=?, Password=? WHERE UserID=? ", vals, function (err, rows, fields) {
+   vals.push(req.body.firstname);
+   vals.push(req.body.lastname);
+   vals.push(req.body.email);
+   vals.push(req.body.username);
+   vals.push(req.body.id);
+
+   if(id && username && email && lastname && firstname){
+
+        connection.query("UPDATE Users SET FirstName=?, LastName=?, EmailAddress=?, Username=? WHERE UserID=? ", vals, function (err, rows, fields) {
             if (!err) {
                 res.end();
             } else {
@@ -111,9 +133,38 @@ function updateUser(req, res) {
                 res.end();
             }
         });
-    });
+   
+    }else{
+        res.end();
     }
-    res.end();
+
+}
+
+function updatePassword(req, res) {
+    var vals = [];
+    
+    vals.push(req.body.password);
+    vals.push(req.body.id);
+
+    if(req.body.password && req.body.id){
+
+        secu_crypto.password_hash(vals[0],10,function(err,finalString){
+
+            vals[0] = finalString;
+            
+            connection.query("UPDATE Users SET Password=? WHERE UserID=? ", vals, function (err, rows, fields) {
+                if (!err) {
+                    res.end();
+                } else {
+                    console.log(err);
+                    res.end();
+                }
+            });
+        });
+    }
+    else{
+        res.end();
+    }
 }
 
 
@@ -131,10 +182,10 @@ function removePrivilege(req, res) {
     for (var i = 0; i < req.body.ids.length; i++) {
         connection.query("DELETE FROM Privileges WHERE PrivilegeID=?", [req.body.ids[i]], function (err, rows, fields) {
             if (!err) {
-                res.end();
+                
             } else {
                 console.log(err);
-                res.end();
+                
             }
         });
     }
@@ -167,6 +218,7 @@ function updatePrivilege(req, res) {
 
     res.end();
 }
+
 function sendSql(req,res){
     console.log(req.body);
     connection.query(req.body.query,function (err, rows, fields) {
@@ -180,6 +232,40 @@ function sendSql(req,res){
         res.end();
 
         });
+}
+
+
+function linkPrivileges(userinfo){
+
+    var id = userinfo.id;
+    var privilege_ids = userinfo.privilege_ids;
+
+    
+    for(var i=0;i<privilege_ids.length ; i++){
+        var vals = [];
+        vals.push(id);
+        vals.push(privilege_ids[i]);
+
+        connection.query("INSERT INTO Users_Privileges VALUES(?,?)",vals,function(err,rows,fields){
+            if(!err){
+                //TODO: LOG
+            }else{
+                console.log(err);
+            }
+        });
+
+    }
+}
+
+function unlinkPrivileges(userid){
+
+    connection.query("DELETE FROM User_Privileges WHERE UserID=?",[userid],function(err,rows,fields){
+        if(!err){
+            //TODO: LOG
+        }else{
+            console.log(err);
+        }
+    });
 }
 
 
@@ -200,6 +286,7 @@ router.get('/SQL',require('connect-ensure-login').ensureLoggedIn(),sql);
 router.post('/removeUser', require('connect-ensure-login').ensureLoggedIn(),removeUser);
 router.post('/addUser', require('connect-ensure-login').ensureLoggedIn(),addUser);
 router.post('/updateUser',require('connect-ensure-login').ensureLoggedIn(), updateUser);
+router.post('/updatePassword',require('connect-ensure-login').ensureLoggedIn(), updatePassword);
 
 router.post('/removePrivilege',require('connect-ensure-login').ensureLoggedIn(),removePrivilege);
 router.post('/addPrivilege',require('connect-ensure-login').ensureLoggedIn(),addPrivilege);

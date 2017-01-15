@@ -81,14 +81,13 @@ function updatePrivilege(id, name) {
     update_table('/admin/getPrivileges');
 }
 
-function updateUser(id, firstname, lastname, email, username, password) {
+function updateUser(id, firstname, lastname, email, username) {
 
     var obj = {
         firstname,
         lastname,
         email,
         username,
-        password,
         id
     };
 
@@ -97,7 +96,7 @@ function updateUser(id, firstname, lastname, email, username, password) {
     obj.lastname = lastname;
     obj.email = email;
     obj.username = username;
-    obj.password = password;
+
 
     console.log(obj); //TODO: Remove Debug Code
 
@@ -106,32 +105,50 @@ function updateUser(id, firstname, lastname, email, username, password) {
     update_table('/admin/getUsers');
 }
 
-function addPrivilege(/*privilegeid,*/ privilegename) {
+function updatePassword(id, password) {
+
     var obj = {
-        //id: Number,
-        name : String
+        id,
+        password
     };
-  //  obj.id = privilegeid;
+
+    obj.id = id;
+    obj.password = password;
+    
+
+    console.log(obj); //TODO: Remove Debug Code
+
+    $.post('/admin/updatePassword', obj);
+
+    update_table('/admin/getUsers');
+}
+
+function addPrivilege(privilegename) {
+    var obj = {
+        name
+    };
+
     obj.name = privilegename;
-    console.log(obj); // Remove Debug Code
+    
+    console.log(obj); //TODO: Remove Debug Code
+
     $.post('/admin/addPrivilege', obj);
     update_table('/admin/getPrivileges');
 }
 
-function addUser(firstname, lastname, email, username, password) {
+function addUser(firstname, lastname, email, username) {
     var obj = {
         firstname,
         lastname,
         email,
         username,
-        password
+       
     };
 
     obj.firstname = firstname;
     obj.lastname = lastname;
     obj.email = email;
     obj.username = username;
-    obj.password = password;
 
 
     console.log(obj); //TODO: Remove Debug Code
@@ -158,20 +175,14 @@ function update_table(route) {
 
 
         var cols = [];
-<<<<<<< HEAD
-        cols.push({
-        title: 'Selected',
-        checkbox: true
-        });
-        for(var key in data[0]){
-=======
+
+
 	cols.push({
 	    title: 'Selected',
             checkbox: true
 	});
 
 	for(var key in data[0]){
->>>>>>> upstream/master
             cols.push({
                 title:key.toString(),
                 field:key.toString()
@@ -207,27 +218,47 @@ function update_table(route) {
 
             },
             onClickRow: function (row, element, field) {
-                $('input[name=id]').val(row.UserID);
-                $('input[name=firstname]').val(row.FirstName);
-                $('input[name=lastname]').val(row.LastName);
-                $('input[name=email]').val(row.EmailAddress);
-                $('input[name=username]').val(row.Username);
+                
+                $('input[name=selected_id]').val(row.UserID);
+                $('input[name=selected_username]').val(row.Username);
+
+                $('input[name=firstname_edit]').val(row.FirstName);
+                $('input[name=lastname_edit]').val(row.LastName);
+                $('input[name=email_edit]').val(row.EmailAddress);
+                $('input[name=username_edit]').val(row.Username);
             }
         });
     });
 }
 
-function init_secumod_users() {
 
+/*======INITIALIZATION======*/
+
+function init_secumod_users() {
     $('button[name=refresh]').click(function () {
         update_table('/admin/getUsers');
     });
 
-    $('button[name=add]').click(function () {
-        $('#modal_add').modal();
+    $('button[name=user_add]').click(function () {
+
+       var  firstname = $('input[name=firstname_add]').val(),
+            lastname = $('input[name=lastname_add]').val(),
+            email = $('input[name=email_add]').val(),
+            username = $('input[name=username_add]').val(),
+            password = $('input[name=password_add]').val(), 
+            password_verify = $('input[name=password_verify_add]').val(); 
+
+        if(firstname && username && email && lastname && password){
+            if(password === password_verify && password !== "" && password_verify !== ""){
+                $('#modal_add').modal();
+            }
+        }else{
+            $(input[name=password_add]).addClass('has-error');  
+            $(input[name=password_verify_add]).addClass('has-error');  
+        }
     });
 
-    $('button[name=update]').click(function () {
+    $('button[name=user_update]').click(function () {
         $('#modal_update').modal();
     });
 
@@ -236,30 +267,45 @@ function init_secumod_users() {
     });
 
     $('button[name=add_confirm]').click(function () {
+
         var firstname = $('input[name=firstname_add]').val(),
             lastname = $('input[name=lastname_add]').val(),
             email = $('input[name=email_add]').val(),
             username = $('input[name=username_add]').val(),
             password = $('input[name=password_add]').val();
-
-
-
         addUser(firstname, lastname, email, username, password);
+
         $('#modal_add').modal('hide');
     });
 
     $('button[name=update_confirm]').click(function () {
-        var id = $('input[name=id]').val(),
-            firstname = $('input[name=firstname]').val(),
-            lastname = $('input[name=lastname]').val(),
-            email = $('input[name=email]').val(),
-            username = $('input[name=username]').val(),
-            password = $('input[name=password]').val();
+        var id = $('input[name=selected_id]').val(),
+            firstname = $('input[name=firstname_edit]').val(),
+            lastname = $('input[name=lastname_edit]').val(),
+            email = $('input[name=email_edit]').val(),
+            username = $('input[name=username_edit]').val();
 
+        updateUser(id, firstname, lastname, email, username);
 
-        updateUser(id, firstname, lastname, email, username, password);
         $('#modal_update').modal('hide');
     });
+
+    $('button[name=password_update]').click(function (){
+        $('#modal_password').modal();
+    });
+
+    $('button[name=password_update_confirm]').click(function () {
+
+        var id = $('input[name=selected_id]').val();
+        var password = $('input[name=password_edit]').val();
+        var password_verify = $('input[name=password_verify_edit]').val();
+        
+            if(password === password_verify && password !== "" && password_verify !== ""){
+                updatePassword(id,password);
+            }
+
+            $('#modal_password').modal('hide');
+     });
 
     $('button[name=remove_confirm]').click(function () {
         removeUser();
@@ -269,10 +315,21 @@ function init_secumod_users() {
     disable_delete(true);
     update_table('/admin/getUsers');
 
+    loadPrivilegeList('#check');
+
 }
 
 
-
+function loadPrivilegeList(id){
+    $.getJSON('admin/getPrivileges',function(data){
+        console.log(data); // TODO: Remove Debug Code
+        for(var i=0;i < data.length;i++){
+        
+            $(id).append('<div class="checkbox"> <input type="checkbox">'+ data[i].PrivilegeName +'</input></div>'); 
+        }
+        
+    });
+}
 
 function init_secumod_privileges() {
 
@@ -315,13 +372,14 @@ function init_secumod_privileges() {
 
     });
 
-
     //$('button[name=add]').click(addUser);
     //$('button[name=save]').click(saveUser);
 
     disable_delete(true);
     update_table('/admin/getPrivileges');
 }
+
+
 function init_secumod_SQL() {
     $('button[name=sql_send]').click(function () {
         var obj = new Object();
@@ -344,6 +402,8 @@ function init_secumod_SQL() {
     });
     
 }
+/*======INITIALIZATION======*/
+
 
 function execute_query(obj){
             console.log(obj);
@@ -376,7 +436,9 @@ function show_table(data){
 }
 
 function check_drop(input,cb){
-    var drop_check= input.includes("drop");
-    cb(drop_check);
+
+    var str = input.toLowerCase();
+    var contains_drop = str.includes('drop');
+    cb(contains_drop);
 }
 

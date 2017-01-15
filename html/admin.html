@@ -3,24 +3,53 @@
 
 <head>
     <title>Administration</title>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>    
-    <script src="javascript/moustache.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
     <script src="javascript/admin_client.js"></script>
-
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.css">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/w3.css">
     <link rel="stylesheet" href="css/admin_css.css">
+    <style>
+        
+        .appended {
+            /*EMPTY DUMMY CLASS*/
+        }
 
+    </style>
     <script>
-        //$('document').ready(init_secumod);
+        function init() {
+            $('#users').hover(function () {
+                $(this).append('<span class="appended">  <b> Users</b></span>');
+            }, function () {
+                $(".appended").remove();
+            });
+
+            $('#privs').hover(function () {
+                $(this).append('<span class="appended">  <b> Privileges</b></span>');
+            }, function () {
+                $(".appended").remove();
+            });
+            
+            $('#sql').hover(function () {
+                $(this).append('<span class="appended">  <b> SQL</b></span>');
+            }, function () {
+                $(".appended").remove();
+            });
+
+            $('#logout').hover(function () {
+                $(this).append('<span class="appended">  <b> Logout</b></span>');
+            }, function () {
+                $(".appended").remove();
+            });
+
+        }
+
+
+        $('document').ready(init);
 
         function httpGetUserPage() {
             $.get('/admin/Users', function (data) {
@@ -35,44 +64,50 @@
         }
 
         function httpGetSQLPage() {
-            $.get('/admin/SQL',function(data){
+            $.get('/admin/SQL', function (data) {
                 $('#content').html(data);
             });
         }
 
-        function toggleSidebar(){
+        function toggleSidebar() {
 
             $('#Sidebar').slideToggle(400);
         }
-        function logout(){
-            $.get('/login/logout');
-            $(location).attr('href','/');
-        }
-      
-    </script>
 
+        function logout() {
+            $.get('/login/logout');
+            $(location).attr('href', '/');
+        }
+
+    </script>
 </head>
 
 <body>
     <div class="nav_top">
         <ul class="nav navbar-nav">
             <li><a href="#" onclick="toggleSidebar()"><span class="glyphicon glyphicon-menu-hamburger hamburger" ></span></a></li>
-            <li><p class="navbar-text">SecuMod</p></li>
         </ul>
+        <div class="text-center">
+            <h3 class="navbar_title">Dashboard</h3>          
+        </div>
+            
     </div>
-
     <nav class="nav_side" id="Sidebar">
         <ul>
-            <li><a href="#" onclick="httpGetUserPage()">Users</a></li>
-            <li><a href="#" onclick="httpGetPrivilegePage()">Privileges</a></li>
-            <li><a href="#" onclick="httpGetSQLPage()">SQL</a></li>
-            <li><a href="#" onclick="logout()">Logout</a></li>
+            <li><a id="users" href="#" onclick="httpGetUserPage()"><span class="glyphicon glyphicon-user"></span></a></li>
+            <li><a id="privs" href="#" onclick="httpGetPrivilegePage()"><span class="glyphicon glyphicon-tags"></span></a></li>
+            <li><a id="sql" href="#" onclick="httpGetSQLPage()"><span class="glyphicon glyphicon-console"></span></a></li>
+            <li><a id="logout" href="#" onclick="logout()"><span class="glyphicon glyphicon-log-out"></span></a></li>
         </ul>
     </nav>
 
+    
+    <!--CONTENT-->
     <div class="content_container" id="content-container">
         <div id="content"></div>
     </div>
+    <!--CONTENT-->
+
 
 </body>
 
