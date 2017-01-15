@@ -304,7 +304,7 @@ function init_secumod_users() {
     update_table('/admin/getUsers',table_users_callback);
     loadPrivilegeList('#check');
 
-}
+})
 
 
 function loadPrivilegeList(id){
@@ -318,7 +318,7 @@ function loadPrivilegeList(id){
     });
 }
 function table_users_callback(row,element,field){
-}                $('input[name=selected_id]').val(row.UserID);
+                $('input[name=selected_id]').val(row.UserID);
                 $('input[name=selected_username]').val(row.Username);
 
                 $('input[name=firstname_edit]').val(row.FirstName);

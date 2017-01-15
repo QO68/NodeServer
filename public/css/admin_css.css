@@ -84,3 +84,6 @@ body{
     /*margin-top: 10px;*/
     color: #ff6600;
 }
+.dash_navbar_buffer{
+    height: 100px;
+}

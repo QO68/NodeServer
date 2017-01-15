@@ -45,7 +45,9 @@
             }, function () {
                 $(".appended").remove();
             });
-
+            $.get('/admin/Dash', function (data) {
+                $('#content').html(data);
+            });
         }
 
 

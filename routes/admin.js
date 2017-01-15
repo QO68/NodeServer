@@ -28,7 +28,9 @@ function privileges(req, res) {
 function sql(req, res){
     res.sendFile(path.resolve("html/sql.html"));
 };
-
+function dash(req, res){
+    res.sendFile(path.resolve("html/dash.html"));
+};
 
 function getUsers(req, res) {
 
@@ -281,6 +283,9 @@ router.get('/Privileges',require('connect-ensure-login').ensureLoggedIn(),privil
 router.get('/getPrivileges',require('connect-ensure-login').ensureLoggedIn(),getPrivileges);
 
 router.get('/SQL',require('connect-ensure-login').ensureLoggedIn(),sql);
+
+
+router.get('/Dash',require('connect-ensure-login').ensureLoggedIn(),dash);
 
 //POST
 router.post('/removeUser', require('connect-ensure-login').ensureLoggedIn(),removeUser);
